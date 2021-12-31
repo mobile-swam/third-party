@@ -1,19 +1,15 @@
 ## stress-ng
 
-stress-ng will stress test a computer system in various selectable ways. It
-was designed to exercise various physical subsystems of a computer as well as
-the various operating system kernel interfaces. Stress-ng features:
+This respository is forked from the official Stress-ng (V0.10.17) to evaluate SWAM on Android.
+stress-ng's goal is to generate various stress tests to verify the SWAM effect.
+It was designed to exercise various physical subsystems of a computer as well as
+the various operating system kernel interfaces. Stress-ng features are as
+following:
 
   * Over 260 stress tests
   * 85+ CPU specific stress tests that exercise floating point, integer,
     bit manipulation and control flow
   * over 20 virtual memory stress tests
-
-stress-ng was originally intended to make a machine work hard and trip hardware
-issues such as thermal overruns as well as operating system bugs that only
-occur when a system is being thrashed hard. Use stress-ng with caution as some
-of the tests can make a system run hot on poorly designed hardware and also can
-cause excessive system thrashing which may be difficult to stop.
 
 stress-ng can also measure test throughput rates; this can be useful to observe
 performance changes across different operating system releases or types of
@@ -25,22 +21,36 @@ test suite, so do NOT use it in this manner.
 Before starting explainging how to build stress-ng for Android platform, 
 we assume that you use Ubuntu 18.04 LTS (64bit) distribution.
 
-If you need to install the gcc-4.9-aarch64-linux-gnu on Ubuntu 18.04 for the build
-compatibility, Please download the binaries at the below Linaro webpage.
+If you need to install the gcc-4.9-aarch64-linux-gnu on Ubuntu 18.04 to avoid the build
+compatibility issues, Please download the binaries at the Linaro webpage as
+follows.
 
-### Install the ARM toolchain manually
-  * https://releases.linaro.org/components/toolchain/binaries/4.9-2017.01/aarch64-linux-gnu/
-
-### Install the ARM toolchain with apt command
 ```bash
-sudo apt install gcc-4.9-aarch64-linux-gnu
-git checkout -b V0.10.17
-CC=aarch64-linux-gnu-gcc-4.9 STATIC=1 make
-ls -al ./stress-ng
+U1804 sudo su -
+U1804 cd /opt/
+U1804 wget https://releases.linaro.org/components/toolchain/binaries/4.9-2017.01/aarch64-linux-gnu/gcc-linaro-4.9.4-2017.01-x86_64_aarch64-linux-gnu.tar.xz
+U1804 tar -xf gcc-linaro-4.9.4-2017.01-x86_64_aarch64-linux-gnu.tar.xz
+U1804 wget https://releases.linaro.org/components/toolchain/binaries/4.9-2017.01/aarch64-linux-gnu/sysroot-eglibc-linaro-2017.01-aarch64-linux-gnu.tar.xz
+U1804 tar -xf sysroot-eglibc-linaro-2017.01-aarch64-linux-gnu.tar.xz
+U1804 cp -cprf ./sysroot-eglibc-linaro-2017.01-aarch64-linux-gnu/* .../gcc-linaro-4.9.4-2017.01-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/libc/
+U1804 
+U1804 export PATH="/opt/gcc-linaro-4.9.4-2017.01-x86_64_aarch64-linux-gnu/bin/:${PATH}"
+U1804 
+U1804 CC=aarch64-linux-gnu-gcc-4.9 STATIC=1 make
+U1804 ls -al ./stress-ng
+-rwxrwxr-x 1 invain invain 7,440,791 Dec 31 19:36 ./stress-ng
+U1804 file ./stress-ng
+./stress-ng: ELF 64-bit LSB executable, ARM aarch64, version 1 (SYSV), statically linked,
+for GNU/Linux 3.7.0, BuildID[sha1]=1db8036fe65daebfdb3eb2849d52fbfb54adca2d,
+with debug_info, not stripped
+U1804 aarch64-linux-gnu-strip  ./stress-ng
+U1804 ls -al ./stress-ng
+-rwxrwxr-x 1 invain invain 2,082,704 Dec 31 19:56 ./stress-ng
+
  ```
 
 
-## Examples
+## Case study
 
 Run 4 CPU, 2 virtual memory, 1 disk and 8 fork stressors for 2 minutes and print measurements:
 ```
@@ -77,13 +87,9 @@ stress-ng: info:  [1171714]                598,760,234 Branch Misses            
 ```
 
 
-## Contributing to stress-ng:
-
-Send patches to colin.i.king@gmail.com or merge requests at
-https://github.com/ColinIanKing/stress-ng
-
-## Quick Start Reference Guide
-The [Ubuntu stress-ng reference guide](https://wiki.ubuntu.com/Kernel/Reference/stress-ng)
-contains a brief overview and worked examples.
+## Reference
+* https://releases.linaro.org/components/toolchain/binaries/4.9-2017.01/aarch64-linux-gnu/
+* https://wiki.ubuntu.com/Kernel/Reference/stress-ng
+* https://github.com/ColinIanKing/stress-ng
 
 
