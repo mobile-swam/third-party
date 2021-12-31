@@ -28,8 +28,10 @@ we assume that you use Ubuntu 18.04 LTS (64bit) distribution.
 If you need to install the gcc-4.9-aarch64-linux-gnu on Ubuntu 18.04 for the build
 compatibility, Please download the binaries at the below Linaro webpage.
 
+### Install the ARM toolchain manually
   * https://releases.linaro.org/components/toolchain/binaries/4.9-2017.01/aarch64-linux-gnu/
 
+### Install the ARM toolchain with apt command
 ```bash
 sudo apt install gcc-4.9-aarch64-linux-gnu
 git checkout -b V0.10.17
