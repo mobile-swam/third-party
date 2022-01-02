@@ -4,7 +4,7 @@
 ## Stress tester (with stress-ng)
 
 
-## On-Dmemand SWAP Agent
+## On-Dmemand SWAP Daemon
 
 ## Launching Cost Manager
 
