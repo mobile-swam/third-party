@@ -22,4 +22,4 @@
 * https://developer.android.com/studio/command-line/dumpsys
 * https://developer.android.com/studio/profile/monitor
 * https://developer.android.com/studio/profile/generate-trace-logs
-
+* https://github.com/ColinIanKing/stress-ng
