@@ -1,8 +1,13 @@
-# Third-party
+[![GitHub license](https://dmlc.github.io/img/apache2.svg)](LICENSE) 
+![Gitter](https://img.shields.io/gitter/room/mobile-swam/swam) ![GitHub repo size](https://img.shields.io/github/repo-size/mobile-swam/swam) ![GitHub issues](https://img.shields.io/github/issues/mobile-swam/swam) ![GitHub pull requests](https://img.shields.io/github/issues-pr/mobile-swam/swam) ![GitHub contributors](https://img.shields.io/github/contributors/mobile-swam/swam)
 
+
+# Third-party
+This repository is to archive the third-party packages. These packages can be used to establish the core functions of the SWAM princile into the user-space software mobile platform.
 
 ## Stress tester (with stress-ng)
 * stress-ng: A tool to load and stress a mobile system
+* stress-apptest: A tool to increase the memory stress on the mobile platform 
 
 ## On-Dmemand SWAP Daemon
 * on-demand-swapd: user-space on-demand swap manager (daemon)
