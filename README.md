@@ -1,5 +1,5 @@
 [![GitHub license](https://dmlc.github.io/img/apache2.svg)](LICENSE) 
-![Gitter](https://img.shields.io/gitter/room/mobile-swam/swam) ![GitHub repo size](https://img.shields.io/github/repo-size/mobile-swam/swam) ![GitHub issues](https://img.shields.io/github/issues/mobile-swam/swam) ![GitHub pull requests](https://img.shields.io/github/issues-pr/mobile-swam/swam) ![GitHub contributors](https://img.shields.io/github/contributors/mobile-swam/swam)
+![Gitter](https://img.shields.io/gitter/room/mobile-swam/third-party) ![GitHub repo size](https://img.shields.io/github/repo-size/mobile-swam/third-party) ![GitHub issues](https://img.shields.io/github/issues/mobile-swam/third-party) ![GitHub pull requests](https://img.shields.io/github/issues-pr/mobile-swam/third-party) ![GitHub contributors](https://img.shields.io/github/contributors/mobile-swam/third-party)
 
 
 # Third-party
