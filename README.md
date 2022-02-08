@@ -16,7 +16,7 @@ This repository is to archive the third-party packages. These packages can be us
 * Android Application Usage Statistics
 
 ## Others
-* stress-ng to stress a memory overhead on mobile devices
+* Linux so file injection to manupulate so files on mobile devices
 * e2fsprogs (includes filefrag to report on file fragmentation of the swam file)
 
 
