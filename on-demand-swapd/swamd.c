@@ -1,5 +1,5 @@
 /*
- * swapd - dynamically add and remove swap
+ * swamd - dynamically add and remove swap-format files
  */ 
 
 # include <stdio.h>
@@ -20,7 +20,7 @@
 # include <sched.h>
 
 /* A header fie */
-# include "swapd.h"
+# include "swamd.h"
 
 /* Data structure */
 int     priority  = PRIORITY;   /* -p */
@@ -33,8 +33,8 @@ char   *tmpdir    = TMPDIR;     /* -d */
 
 int	debug	= 0;		/* -D */
 
-char  **swapfile;		/* the names of swap files created */
-int     chunks	= 0;		/* number of swap files currently alloc'ed */
+char  **swamfile;		/* the names of swam files created */
+int     chunks	= 0;		/* number of swam files currently alloc'ed */
 
 int     addswap ( int );
 int     delswap ( int );
@@ -50,9 +50,9 @@ void	ckconf ( char *argv0 )
     if ( lstat ( tmpdir, &st ) < 0 || ! S_ISDIR ( st.st_mode ) )
 	msg = "tmpdir is not a directory";
     else if ( chunksz < 2 * PAGE_SIZE )
-	msg = "size too small for swapfile";
+	msg = "size too small for swamfile";
     else if ( chunksz > ( PAGE_SIZE - 10 ) * 8 * PAGE_SIZE )
-	msg = "size too large for swapfile (strange, but true)";
+	msg = "size too large for swamfile (strange, but true)";
     else if ( upper < lower )
 	msg = "lower limit is smaller than upper limit";
 
@@ -63,7 +63,7 @@ void	ckconf ( char *argv0 )
 }
 
 /*
- * Remove all swapfiles.
+ * Remove all swamfiles.
  */
 void	cleanup ()
 {
@@ -101,14 +101,14 @@ void	usage ( char *argv0, char *str )
  */
 void	help ( char *argv0 )
 {
-    (void) fprintf ( stderr, "%s: dynamically maintain swap\n"
+    (void) fprintf ( stderr, "%s: dynamically maintain swap-style swam files\n"
 	    "\t-p\tpriority to run at\n"
-	    "\t-d\tdirectory to create swap files in\n"
+	    "\t-d\tdirectory to create swam files in\n"
 	    "\t-i\tinterval to check system\n"
-	    "\t-s\tsize of each swap file\n"
-	    "\t-l\tlower limit for spare VM (trigger to add swap)\n"
-	    "\t-u\tupper limit for spare VM (trigger to remove swap)\n"
-	    "\t-n\tmaximum number of swap files to create\n", argv0 );
+	    "\t-s\tsize of each swam file\n"
+	    "\t-l\tlower limit for spare VM (trigger to add swam)\n"
+	    "\t-u\tupper limit for spare VM (trigger to remove swam)\n"
+	    "\t-n\tmaximum number of swam files to create\n", argv0 );
 }
 
 /*
@@ -138,7 +138,7 @@ int suffix ( char **str )
 /*
  * The main program.
  * Parse arguments, prepare for battle stations.
- * Loop repeatedly, deciding whether to add or remove swap based on swap
+ * Loop repeatedly, deciding whether to add or remove swam files based on swap
  * currently available, and the high and low water marks.
  */
 int     main ( int argc, char *argv[] )
@@ -181,13 +181,13 @@ int     main ( int argc, char *argv[] )
 	    numchunks = strtol ( optarg, &optarg, 10 );
 	    numchunks *= suffix ( &optarg );
 	    if ( numchunks <= 0 || *optarg != '\0' )
-		usage ( argv[0], "bad value for maximum number of swapfiles" );
+		usage ( argv[0], "bad value for maximum number of swam files" );
 	    break;
 	case 's':
 	    chunksz = strtol ( optarg, &optarg, 10 );
 	    chunksz *= suffix ( &optarg );
 	    if ( chunksz <= 0 || *optarg != '\0' )
-		usage ( argv[0], "bad value for size of swapfile" );
+		usage ( argv[0], "bad value for size of swam file" );
 	    break;
 	case 'u':
 	    upper = strtol ( optarg, &optarg, 10 );
@@ -215,7 +215,7 @@ int     main ( int argc, char *argv[] )
         exit ( 1 );
     }
 
-    /* don't want swap files world readable */
+    /* don't want swam files world readable */
     (void) umask ( 0077 );
 
     /* want to run at higher priority so get a chance to add swap space */
@@ -251,18 +251,18 @@ int     main ( int argc, char *argv[] )
 	}
     }
 
-    openlog ( "swapd", LOG_DAEMON | LOG_CONS | (debug ? LOG_PERROR : 0), 0 );
+    openlog ( "swamd", LOG_DAEMON | LOG_CONS | (debug ? LOG_PERROR : 0), 0 );
     setlogmask ( debug ? LOG_UPTO ( LOG_DEBUG ) : LOG_UPTO ( LOG_WARNING ) );
 
     /* allocate memory needed at start, rather than leaving to later */
-    swapfile = malloc ( sizeof(char*) * numchunks );
-    if ( swapfile == NULL ) {
+    swamfile = malloc ( sizeof(char*) * numchunks );
+    if ( swamfile == NULL ) {
         syslog ( LOG_ERR, "malloc failed... bye" );
         exit ( 1 );
     }
     for ( i = 0; i < numchunks; i++ ) {
-        swapfile[i] = malloc ( strlen ( tmpdir ) + sizeof ( SUFFIX ) );
-	if ( swapfile[i] == NULL ) {
+        swamfile[i] = malloc ( strlen ( tmpdir ) + sizeof ( SUFFIX ) );
+	if ( swamfile[i] == NULL ) {
 	    syslog ( LOG_ERR, "malloc failed... bye" );
 	    exit ( 1 );
 	}
@@ -278,7 +278,7 @@ int     main ( int argc, char *argv[] )
 
     for ( ; ; ) {
 	swap = getswap();
-	syslog ( LOG_DEBUG, "%dk available swap", swap / 1024 );
+	syslog ( LOG_DEBUG, "%ld available swap", swap / 1024 );
 	if ( swap < lower && chunks < numchunks ) {
 	    if ( addswap ( chunks ) )
 		chunks++;
@@ -402,7 +402,7 @@ long getswap ()
 }
 
 /*
- * Add swapfile number i.
+ * Add swamfile number i.
  */
 int addswap ( int i )
 {
@@ -419,13 +419,13 @@ int addswap ( int i )
         exit ( 1 );
     }
     if ( fsstat.f_bsize * fsstat.f_bavail < chunksz ) {
-        syslog ( LOG_WARNING, "no space for swapfile on \"%s\"", tmpdir );
+        syslog ( LOG_WARNING, "no space for swamfile on \"%s\"", tmpdir );
 	return 0;
     }
 
-    strcpy ( swapfile[i], tmpdir );
-    strcat ( swapfile[i], SUFFIX );
-    if ( ( fd = mkstemp ( swapfile[i] ) ) < 0 ) {
+    strcpy ( swamfile[i], tmpdir );
+    strcat ( swamfile[i], SUFFIX );
+    if ( ( fd = mkstemp ( swamfile[i] ) ) < 0 ) {
 	syslog ( LOG_ERR, "mkstemp failed: %m" );
 	cleanup ();
 	exit ( 1 );
@@ -443,30 +443,30 @@ int addswap ( int i )
     /* stick the pages for swapping onto disk */
     while ( pages-- > 0 ) {
         if ( write ( fd, page, sizeof(page) ) != sizeof(page) ) {
-	    syslog ( LOG_WARNING, "write failed on \"%s\": %m", swapfile[i] );
+	    syslog ( LOG_WARNING, "write failed on \"%s\": %m", swamfile[i] );
 	    (void) close ( fd );
-	    (void) unlink ( swapfile[i] );
+	    (void) unlink ( swamfile[i] );
 	    return 0;
 	}
 	if ( ! clean++ )
 	    memset ( page, 0, sizeof(page) );
     }
     if ( fsync ( fd ) < 0 ) {
-	syslog ( LOG_ERR, "fsync failed on \"%s\": %m", swapfile[i] );
+	syslog ( LOG_ERR, "fsync failed on \"%s\": %m", swamfile[i] );
 	close ( fd );
-	(void) unlink ( swapfile[i] );
+	(void) unlink ( swamfile[i] );
 	return 0;
     }
     if ( close ( fd ) < 0 ) {
-	syslog ( LOG_ERR, "fsync failed on \"%s\": %m", swapfile[i] );
-	(void) unlink ( swapfile[i] );
+	syslog ( LOG_ERR, "fsync failed on \"%s\": %m", swamfile[i] );
+	(void) unlink ( swamfile[i] );
 	return 0;
     }
 
-    syslog ( LOG_INFO, "adding \"%s\" as swap", swapfile[i] );
-    if ( swapon ( swapfile[i], 0 ) < 0 ) {
-	syslog ( LOG_ERR, "swapon failed on \"%s\": %m", swapfile[i] );
-	(void) unlink ( swapfile[i] );
+    syslog ( LOG_INFO, "adding \"%s\" as swap", swamfile[i] );
+    if ( swapon ( swamfile[i], 0 ) < 0 ) {
+	syslog ( LOG_ERR, "swapon failed on \"%s\": %m", swamfile[i] );
+	(void) unlink ( swamfile[i] );
 	return 0;
     }
 
@@ -474,19 +474,19 @@ int addswap ( int i )
 }
 
 /*
- * Remove swapfile number i.
+ * Remove swamfile number i.
  */
 int delswap ( int i )
 {
-    if ( swapoff ( swapfile[i] ) < 0 ) {
-	syslog ( LOG_ERR, "swapoff failed on \"%s\": %m", swapfile[i] );
+    if ( swapoff ( swamfile[i] ) < 0 ) {
+	syslog ( LOG_ERR, "swapoff failed on \"%s\": %m", swamfile[i] );
 	return 0;
     }
-    if ( unlink ( swapfile[i] ) < 0 ) {
-        syslog ( LOG_ERR, "unlink of \"%s\" failed: %m", swapfile[i] );
+    if ( unlink ( swamfile[i] ) < 0 ) {
+        syslog ( LOG_ERR, "unlink of \"%s\" failed: %m", swamfile[i] );
     }
 
-    syslog ( LOG_INFO, "removed \"%s\" as swap", swapfile[i] );
+    syslog ( LOG_INFO, "removed \"%s\" as swap", swamfile[i] );
 
     return 1;
 }

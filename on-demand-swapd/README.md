@@ -1,4 +1,5 @@
 
+## Introduction
 This package is to support user-space On-Demand SWAP daemon.
 A user space daemon would be a more suitable place to do adaptive memory
 management.
@@ -12,20 +13,32 @@ management.
     add swap space.
 
 This daemon monitors the amount of free VM available from the /proc/meminfo,
-and then, dynamically add swap files as needed.
-
-This daemon allows free space in the filesystem to be used as swap when
-needed by adding additional swap files as needed.
+and then, dynamically add swam files as needed. This daemon allows free space
+in the filesystem to be used as swap when needed by adding additional swam files as needed.
 
 Swapd periodically monitors the amount of free swap available in
 the system.  It tries to maintain the amount of swap using upper and
-lower limits.  If the amount of free swap falls below the lower limit,
-it will add an extra swapfile.  A swap file will be removed if it will
+lower limits.  If the amount of free swam falls below the lower limit,
+it will add an extra swam file. A swam file will be removed if it will
 still leave the system with at least the upper limit available.
 
 Since swapping from a file is less efficient than swapping from a
 partition, this can be used to `top up' the swap when needed.
 
+
+## How to use
 Note that all of the parameters can either be changed at compile time, or at
 run time from the command line.
+
+* Usage:
+```bash
+./swapd [-p prio] [-d dir] [-i interval] [-n num] [-s size] [-l lower] [-u upper]
+ -p: priority to run at
+ -d: directory to create swam files in
+ -i: interval to check system
+ -s: size of each swam file
+ -l: lower limit for spare VM (trigger to add swam)
+ -u: upper limit for spare VM (trigger to remove swam)
+ -n: maximum number of swam files to create
+```
 
