@@ -5,7 +5,7 @@
 # Third-party
 This repository is to archive the third-party packages. These packages can be used to establish the core functions of the SWAM princile into the user-space software mobile platform.
 
-## Stress tester (with stress-ng)
+## Stress tool
 * stress-ng: A tool to load and stress a mobile system
 * stress-apptest: A tool to increase the memory stress on the mobile platform 
 
@@ -16,9 +16,16 @@ This repository is to archive the third-party packages. These packages can be us
 * Android Application Usage Statistics
 
 ## Others
-* Linux so file injection to manupulate so files on mobile devices
-* e2fsprogs (includes filefrag to report on file fragmentation of the swam file)
-
+* android-app-usage-statistics: A package to collect usage statistics of applications
+* bionic: BSD-based low-level C library for Android platform
+* dts-pixel5-redfin: Device Tree Source (DTS) files for Pixel5 (Redfin)
+* e2fsprogs:
+  - filefrag: A utility to report on file fragmentation of the swam file
+  - e4defrag: Online defragment for ext4 to reduce fragmentation of extent based file
+* linux-process-page-dumper: Process page dumper for Linux kernel
+* linux-so-file-injection: Manupulator to control so files on mobile devices
+* study-linux-binfmt_elf_loader: ELF loader to handle Linux-based binary format(bintfmt)
+* touch-screen-monitor: Touch screen monitor to evaluate the user responsiveness
 
 ## Reference
 * https://perf.wiki.kernel.org/index.php/Main_Page
