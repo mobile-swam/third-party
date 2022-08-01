@@ -4,97 +4,97 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#define NUM 10
 #define LIBPATH "./libcount.so"
+
+#include <unistd.h>
+#include <sys/syscall.h>
+
+#ifndef SYS_gettid
+#error "SYS_gettid unavailable on this system"
+#endif
+
+#define gettid() ((pid_t)syscall(SYS_gettid))
+
+void *handler = NULL;
+#define THREAD_NUM 2
+
+pthread_t threads[THREAD_NUM];
+int done[THREAD_NUM];
+
+void *ThreadRun(void *);
+
 
 void *ThreadRun(void *arg)
 {
-    printf("test............... \r\n");
-    void *handler = dlopen(LIBPATH, RTLD_LAZY);
-    if (handler == NULL)
+    if (handler == NULL || handler != 0)
     {
-        printf("ERROR:%s:dlopen\n", dlerror());
-        return;
+        handler = dlopen(LIBPATH, RTLD_LAZY);
+        if (handler == NULL)
+        {
+            printf("test02........... \r\n");
+            printf("ERROR:%s:dlopen\n", dlerror());
+            return;
+        }
     }
-    printf("test2............... \r\n");
-    void (*inc)() = (void (*)())dlsym(handler, "inc");
-    if (inc == NULL)
-    {
-        printf("ERROR:%s:dlsym\n", dlerror());
-        return;
-    }
-
-    printf("test3............... \r\n");
-    int (*get)() = (int (*)())dlsym(handler, "get");
-    if (get == NULL)
-    {
-        printf("ERROR:%s:dlsym\n", dlerror());
-        return;
-    }
-
-    printf("test4............... \r\n");
-    int i = 0;
-    for (; i < NUM; i++)
-    {
-        inc();
-        usleep(1000*1000);
-        printf("ThreadRun:PID(%d):%d\n", getpid(), get());
-    }
-
-    dlclose(handler);
-}
-
-void *ThreadRun2(void *arg)
-{
-    void *handler = dlopen(LIBPATH, RTLD_LAZY);
-    if (handler == NULL)
-    {
-        printf("ERROR:%s:dlopen\n", dlerror());
-        return;
-    }
-    void (*inc)() = (void (*)())dlsym(handler, "inc");
-    if (inc == NULL)
-    {
-        printf("ERROR:%s:dlsym\n", dlerror());
-        return;
-    }
-
-    int (*get)() = (int (*)())dlsym(handler, "get");
-    if (get == NULL)
-    {
-        printf("ERROR:%s:dlsym\n", dlerror());
-        return;
-    }
-
-    int i = 0;
-    for (; i < NUM; i++)
-    {
-        inc();
-        usleep(1000*1000);
-        printf("ThreadRun2: PID(%d):%d\n", getpid(), get());
-    }
-
-    dlclose(handler);
-}
-
-int main()
-{
-    pthread_t tid, tid2;
-    tid = 0, tid2=0;
-    int status; 
-
-    for (int i = 1 ; i <= 1 ; i++)
-    {   tid++;
-        pthread_create(&tid, NULL, ThreadRun, NULL);
-        printf("create ThreadRun OK, %d !!!\n", tid);
-        pthread_join(tid, (void **)&status);
    
-        tid2++; 
-        pthread_create(&tid2, NULL, ThreadRun2, NULL);
-        printf("create ThreadRun2 OK, %d !!!\n", tid2);
-        pthread_join(tid, (void **)&status);
+    //  if a shared library (.so) is loaded by dlopen, run this line
+    if (handler > 0)
+    {
+        void (*inc)() = (void (*)())dlsym(handler, "inc");
+        if (inc == NULL)
+        {
+            printf("ERROR:%s:dlsym\n", dlerror());
+            return;
+        }
+    
+        int (*get)() = (int (*)())dlsym(handler, "get");
+        if (get == NULL)
+        {
+            printf("ERROR:%s:dlsym\n", dlerror());
+            return;
+        }
+    
+        for (int i = 0 ; i < 3; i++)
+        {
+            inc();
+            printf("ThreadRun(): PID(%d), Result(%d)\n", gettid(), get());
+            usleep(1000*2000);
+        }
+        dlclose(handler);
     }
-    //while (1);
+}
 
-    return 0;
+
+
+int main(void)
+{
+	int i;
+	int rc;
+	int status;
+	
+	printf("pid=%d\n", getpid());
+	
+	for (i = 0; i < THREAD_NUM; i++)
+	{	
+		done[i] = 0;
+		pthread_create(&threads[i], NULL, &ThreadRun, i);
+		printf("%d, %ld\n", i, threads[i]);
+	}
+    printf("-------------------------\r\n");
+
+	for (i = THREAD_NUM -1 ; i >= 0; i--)
+	{
+		done[i] = 1;
+	         rc = pthread_join(threads[i], (void **)&status);
+		if (rc == 0)
+		{
+			printf("Completed join with thread %d status= %d\n",i, status);
+		}
+		else
+		{
+			printf("ERROR; return code from pthread_join() is %d, thread %d\n", rc, i);
+            return -1;
+		}
+	}
+	return 0;
 }
