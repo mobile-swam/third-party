@@ -1,6 +1,6 @@
 
 ## Introduction
-This package is to support user-space On-Demand SWAP daemon.
+This package is to support user-space Adaptive SWAP daemon.
 A user space daemon would be a more suitable place to do adaptive memory
 management.
 
