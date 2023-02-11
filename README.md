@@ -3,7 +3,7 @@
 
 
 # Third-party
-This repository is to archive the third-party packages. These packages can be used to establish the core functions of the SWAM princile into the user-space software mobile platform.
+The objective of this repository is to archive third-party packages. These packages can be used to integrate the core SWAM functions into the user-space mobile software platform.
 
 ## Stress tool
 * stress-ng: A tool to load and stress a mobile system
