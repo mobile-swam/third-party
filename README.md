@@ -9,8 +9,8 @@ This repository is to archive the third-party packages. These packages can be us
 * stress-ng: A tool to load and stress a mobile system
 * stress-apptest: A tool to increase the memory stress on the mobile platform 
 
-## On-Dmemand SWAP Daemon
-* on-demand-swapd: user-space on-demand swap manager (daemon)
+## Adaptive SWAP Daemon
+* adaptive-swapd: user-space on-demand swap manager (daemon)
 
 ## Launching Cost Manager
 * Android Application Usage Statistics
