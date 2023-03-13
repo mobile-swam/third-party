@@ -10,7 +10,7 @@ The objective of this repository is to archive third-party packages. These packa
 * stress-apptest: A tool to increase the memory stress on the mobile platform 
 
 ## Adaptive SWAP Daemon
-* adaptive-swapd: user-space on-demand swap manager (daemon)
+* adaptive-swapd: user-space adaptive swap manager (daemon)
 
 ## Launching Cost Manager
 * Android Application Usage Statistics
